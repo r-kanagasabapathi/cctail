@@ -1,8 +1,8 @@
 .DS_Store
 .history
 node_modules
-log.conf.js
-log.conf.json
+log.conf.js*
 package-lock.json
 dist/*
 sandbox.txt
+*.log

@@ -156,20 +156,51 @@ const logfetcher = {
     }
   },
 
-  fetchFileSize: async function(profile: DwJson, logobj: LogFile): Promise<number> {
-    let size = 0;
+  convertFileSize: function(insize: string): number {
     try {
-      logger.log(logger.debug, chalk.cyan(`Fetching size for ${logobj.log}`), logobj.debug);
-      let res = await this.makeRequest(profile, 'HEAD', logobj.log, null, logobj.debug);
-      if (res.headers['content-length']) {
-        size = parseInt(res.headers['content-length'], 10);
-        logger.log(logger.debug, `Fetched size for ${logobj.log}: size ${size}`, logobj.debug);
-      } else {
-        logger.log(logger.debug, `No content-length returned for ${logobj.log}`, logobj.debug);
+      var splitsize = insize.split(/\s+/);
+      var sizenum = parseFloat(splitsize[0]);
+      var multby = 1;
+      switch(splitsize[1].toLowerCase()) {
+        case "kb":
+          multby = 1000;
+          break;
+        case "mb":
+          multby = 1000000;
+          break;
+        case "gb":
+          multby = 1000000000;
+          break;
+        default:
+          break;
       }
+      var outsize = Math.trunc(sizenum * multby);
+      return outsize;
     } catch (err) {
-      logger.log(logger.error, `Fetching file size of ${logobj.log} failed with error: ${err.message}`);
+      logger.log(logger.warn, `Error parsing number from webdav-reported filesize: ${insize}, error: ${err}`);
+      return 0;
     }
+  },
+
+  fetchFileSize: async function(profile: DwJson, logobj: LogFile): Promise<number> {
+    let size = this.convertFileSize(logobj.size_string, logobj.debug);
+    if (size > 0) {
+      logger.log(logger.debug, `Using approximate file size of ${logobj.log} from webdav index: ${size}`, logobj.debug);
+    } else {
+      try {
+        logger.log(logger.debug, `Fetching size for ${logobj.log} using HEAD request`, logobj.debug);
+        let res = await this.makeRequest(profile, 'HEAD', logobj.log, null, logobj.debug);
+        if (res.headers['content-length']) {
+          size = parseInt(res.headers['content-length'], 10);
+          logger.log(logger.debug, `Fetched size for ${logobj.log}: size ${size}`, logobj.debug);
+        } else {
+          logger.log(logger.debug, `No content-length returned for ${logobj.log}`, logobj.debug);
+        }
+      } catch (err) {
+        logger.log(logger.warn, `Fetching file size of ${logobj.log} failed with error: ${err.message}`);
+      }
+    }
+
     return size;
   },
 
