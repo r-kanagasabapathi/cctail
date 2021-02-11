@@ -292,12 +292,8 @@ let pollLogs = async function(fileobjs: LogFile[], doRollover = false) {
     }
 
     // Codeprofiler files should only be consumed once
-    let cp = fileobjs.findIndex(logobj => logobj.log.endsWith("csv"));
-    if(cp > -1) {
-      logger.log(logger.debug, `Removed codeprofiler log ${fileobjs[cp].log} from list.`, debug);
-      fileobjs.splice(cp, 1);
-    }
-
+    logger.log(logger.debug, `Removing from list: ${JSON.stringify(fileobjs.filter(logobj => logobj.log.endsWith("csv")), null, 2)}`, debug);
+    fileobjs = fileobjs.filter(logobj => !logobj.log.endsWith("csv"));
   } else {
     if(interactive) {
       fileobjs = await interact();
