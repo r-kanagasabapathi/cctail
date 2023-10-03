@@ -231,7 +231,7 @@ let getThatLogList = async function(profile: DwJson, filesuffix = ".log"): Promi
     data = await logfetcher.fetchLogList(profile, debug);
   }
 
-  let regexp = new RegExp(`<a href="/on/demandware.servlet/webdav/Sites/Logs/(.*?)">[\\s\\S\\&\\?]*?<td align="right">(?:<tt>)?(.*?)(?:<\\/tt>)?</td>[\\s\\S\\&\\?]*?<td align="right"><tt>(.*?)</tt></td>`, 'gim');
+  let regexp = new RegExp(`<a href="/on/demandware.servlet/webdav/Sites/Securitylogs/(.*?)">[\\s\\S\\&\\?]*?<td align="right">(?:<tt>)?(.*?)(?:<\\/tt>)?</td>[\\s\\S\\&\\?]*?<td align="right"><tt>(.*?)</tt></td>`, 'gim');
   let match = regexp.exec(data);
 
   while (match != null) {
