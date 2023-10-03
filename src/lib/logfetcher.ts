@@ -53,7 +53,7 @@ const logfetcher = {
       process.exit(1);
     }
 
-    let url = `https://${profile.hostname}/on/demandware.servlet/webdav/Sites/Logs`;
+    let url = `https://${profile.hostname}/on/demandware.servlet/webdav/Sites/Securitylogs`;
     let method: Method = (methodStr as Method);
     if (url_suffix && url_suffix.length > 0) {
       url += '/' + url_suffix;
